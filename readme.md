@@ -1,1 +1,1 @@
-heroku add: https://fullstackopen-2021.herokuapp.com/
+heroku app: https://fullstackopen-2021.herokuapp.com/
