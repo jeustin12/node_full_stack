@@ -47,32 +47,24 @@ app.get("/api/persons/:id", (request, response, next) => {
         .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
     const body = request.body;
     if (!body.name || !body.number) {
         return response.status(400).json({
             error: "content missing",
         });
     }
-    if (body.name.length < 4) {
-        return response.status(400).json({
-            error: "name must have 4 or more letters",
-        });
-    }
-    if (body.number.length < 8) {
-        return response.status(400).json({
-            error: "number must have 8 or more numbers",
-        });
-    }
-
     const person = new Persona({
         name: body.name,
         number: body.number || false,
     });
 
-    person.save().then((newPerson) => {
-        response.json(newPerson.toJSON());
-    });
+    person
+        .save()
+        .then((newPerson) => {
+            response.json(newPerson.toJSON());
+        })
+        .catch((error) => next(error));
 });
 app.put("/api/persons/:id", (request, response, next) => {
     const { name, number } = request.body;

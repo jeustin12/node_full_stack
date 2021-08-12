@@ -1,12 +1,17 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 const url = process.env.MONGODB_URI;
-
+const uniqueValidator = require("mongoose-unique-validator");
 console.log("connecting to", url);
 
 mongoose
-    .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then((result) => {
+    .connect(url, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+    })
+    .then(() => {
         console.log("connected to MongoDB");
     })
     .catch((error) => {
@@ -31,5 +36,5 @@ personSchema.set("toJSON", {
         delete returnedObject.__v;
     },
 });
-
+personSchema.plugin(uniqueValidator);
 module.exports = mongoose.model("Persona", personSchema);
