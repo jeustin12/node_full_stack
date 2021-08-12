@@ -35,6 +35,8 @@ app.use(
     )
 );
 app.use(cors());
+app.use(express.static("build"));
+
 app.get("/info", (request, response) => {
     let info = `
     Phonebook has info for ${persons.length} people
