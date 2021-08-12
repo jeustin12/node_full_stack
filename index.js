@@ -44,10 +44,7 @@ app.get("/api/persons/:id", (request, response, next) => {
                 response.status(404).end();
             }
         })
-        .catch((error) => {
-            console.log(error);
-            response.status(500).end();
-        });
+        .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -77,7 +74,7 @@ app.post("/api/persons", (request, response) => {
         response.json(newPerson.toJSON());
     });
 });
-app.put("/api/persons/:id", (request, response) => {
+app.put("/api/persons/:id", (request, response, next) => {
     const { name, number } = request.body;
 
     Persona.findByIdAndUpdate(
@@ -97,7 +94,19 @@ app.delete("/api/persons/:id", (request, response, next) => {
         })
         .catch((error) => next(error));
 });
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message);
 
+    if (error.name === "CastError" && error.kind === "ObjectId") {
+        return response.status(400).send({ error: "malformatted id" });
+    } else if (error.name === "ValidationError") {
+        return response.status(400).json({ error: error.message });
+    }
+
+    next(error);
+};
+
+app.use(errorHandler);
 app.listen(process.env.PORT || 4000, () => {
     console.log(`Server running on port ${process.env.PORT}`);
 });
